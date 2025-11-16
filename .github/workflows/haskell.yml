@@ -44,8 +44,11 @@ jobs:
       - name: ⚙️ Pre-configure Global Resolver
         run: |
           mkdir -p ~/.stack/global-project
-          echo "resolver: lts-22.14" > ~/.stack/global-project/stack.yaml
-          # Usa el resolver que necesites.
+          echo "resolver: lts-22.14" > ~/.stack/global-project/stack.yaml          
+          
+      - name: 📝 Create placeholder LICENSE file
+        run: echo "Unlicensed or Placeholder" > haskell-server/LICENSE    
+        
       - name: ⚙️ Stack build in haskell-server
         # Usamos 'working-directory' para ejecutar el comando dentro de la carpeta correcta
         run: stack build --fast
