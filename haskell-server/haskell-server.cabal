@@ -8,10 +8,8 @@ version:             0.1.0.0
 -- synopsis:
 -- description:
 -- bug-reports:
--- license:
-license-file:        LICENSE
-author:              lisandro iraguen
-maintainer:          lisandro.iraguen@gmail.com
+license: NONE
+
 -- copyright:
 -- category:
 build-type:          Simple
