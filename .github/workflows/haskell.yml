@@ -43,7 +43,9 @@ jobs:
      
       - name: 📝 Create placeholder LICENSE file
         # Creamos el archivo 'LICENSE' (sin extensión, en mayúsculas)
-        run: echo "MIT" > haskell-server/LICENSE      
+        run: |
+           echo "mit" > haskell-server/LICENSE  # Sin extensión
+           echo "mit" > haskell-server/LICENSE.txt # Con extensión
         
       - name: ⚙️ Pre-configure Global Resolver
         run: |
