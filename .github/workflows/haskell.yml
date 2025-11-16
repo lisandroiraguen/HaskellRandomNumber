@@ -1,4 +1,4 @@
-name: Haskell CI
+name: Azure Function Deployment (Pre-Built)
 
 on:
   push:
@@ -10,34 +10,38 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
-
+    environment: Production
+    
     steps:
+    
+    # 1. Checkout Code
     - uses: actions/checkout@v4
-    - uses: actions/setup-haskell@v1
-      with:
-        ghc-version: '8.10.3'
-        cabal-version: '3.2'
-
-    - name: Cache
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-cabal
-      with:
-        path: ~/.cabal
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-
-    - name: Install dependencies
+    
+    # 2. Create Deployment Package 📂
+    - name: Prepare Deployment Package
       run: |
-        cabal update
-        cabal build --only-dependencies --enable-tests --enable-benchmarks
-    - name: Build
-      run: cabal build --enable-tests --enable-benchmarks all
-    - name: Run tests
-      run: cabal test all
+        # Create the package directory
+        mkdir deploy_package
+        
+        # Copy the host.json file
+        cp host.json deploy_package/
+        
+        # Copy the function folder (containing function.json)
+        # Assuming the folder is named 'haskellrandom'
+        cp -r haskellrandom deploy_package/
+        
+        # Copy the pre-built Haskell executable and rename it
+        # NOTE: Adjust the path 'path/to/your/haskell-server.exe'
+        # to where the built executable is located in your checked-out repository.
+        # This path must be relative to the root of your repo.
+        cp haskell-server/haskell-server.exe deploy_package/haskell-server.exe
+        
+    # 3. Deploy to Azure Function
+    - name: 'Deploy to Azure Function'
+      uses: azure/functions-action@v1
+      with:
+        app-name: 'haskellrandom' # Replace with your function app name
+        package: 'deploy_package/' # The folder containing the deployable files
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # Your GitHub Secret
