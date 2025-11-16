@@ -40,7 +40,12 @@ jobs:
           key: ${{ runner.os }}-stack-${{ hashFiles('haskell-server/stack.yaml', 'haskell-server/package.yaml') }} # <- CAMBIO CRUCIAL
           restore-keys: |
             ${{ runner.os }}-stack-
-
+            
+      - name: ⚙️ Pre-configure Global Resolver
+        run: |
+          mkdir -p ~/.stack/global-project
+          echo "resolver: lts-22.14" > ~/.stack/global-project/stack.yaml
+          # Usa el resolver que necesites.
       - name: ⚙️ Stack build in haskell-server
         # Usamos 'working-directory' para ejecutar el comando dentro de la carpeta correcta
         run: stack build --fast
