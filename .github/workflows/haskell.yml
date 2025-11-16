@@ -38,10 +38,15 @@ jobs:
         
         # Note: local.settings.json should NOT be deployed to Azure.
         
-    # 3. Deploy to Azure Function
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        # This points to the secret you just created
+        creds: ${{ secrets.AZURE_CREDENTIALS }} 
+        
     - name: 'Deploy to Azure Function'
       uses: azure/functions-action@v1
       with:
-        app-name: 'haskellrandom' # REPLACE with your function app name
-        package: 'deploy_package/' # This directory contains the deployable files
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # Your GitHub Secret
+        app-name: 'haskellrandom' 
+        package: 'deploy_package/' 
+        # No 'publish-profile' is needed here, as login handles authentication
