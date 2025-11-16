@@ -1,0 +1,19 @@
+
+# Azure Functions artifacts
+bin
+obj
+appsettings.json
+local.settings.json
+
+# Azurite artifacts
+__blobstorage__
+__queuestorage__
+__azurite_db*__.json
+/haskell-server/dist-newstyle/build
+/haskell-server/dist-newstyle/cache
+/haskell-server/dist-newstyle
+/haskell-server/.stack-work
+
+haskell-server/Setup.hs.save0
+haskell-server/CHANGELOG.md.save0
+/.vscode
