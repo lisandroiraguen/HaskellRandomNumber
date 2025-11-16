@@ -1,52 +1,62 @@
-name: Azure Function Deployment (Pre-Built)
+name: Haskell Build and Azure OIDC
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
+  id-token: write # Requerido para la autenticación OIDC con Azure
   contents: read
 
 jobs:
-  deploy:
+  build-and-auth:
     runs-on: ubuntu-latest
-    environment: Production
-    
+    env:
+      AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }} # Ejemplo de uso de secreto
+
     steps:
-    
-    # 1. Checkout Code
-    - uses: actions/checkout@v4
-    
-    # 2. Create Deployment Package 📦
-    - name: Prepare Deployment Package
-      run: |
-        # Create the package directory
-        mkdir deploy_package
-        
-        # Copy the required files and folders from the repository root
-        
-        # Copy the host.json file
-        cp host.json deploy_package/
-        
-        # Copy the function folder (HaskellTrigger)
-        cp -r HaskellTrigger deploy_package/
-        
-        # Copy the pre-built Haskell executable. The source and destination name are the same.
-        cp haskell-server.exe deploy_package/
-        
-        # Note: local.settings.json should NOT be deployed to Azure.
-        
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        # This points to the secret you just created
-        creds: ${{ secrets.AZURE_CREDENTIALS }} 
-        
-    - name: 'Deploy to Azure Function'
-      uses: azure/functions-action@v1
-      with:
-        app-name: 'haskellrandom' 
-        package: 'deploy_package/' 
-        # No 'publish-profile' is needed here, as login handles authentication
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup Haskell with Stack
+        uses: haskell/actions/setup@v2
+        with:
+          ghc-version: 'latest' # O la versión específica que uses (ej: 9.6.5)
+          stack-version: 'latest'
+          enable-stack: true
+
+      - name: 📦 Restore Stack dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.stack
+            .stack-work
+          key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml', 'package.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-stack-
+
+      - name: ⚙️ Stack build
+        run: stack build --fast
+
+      - name: 🧪 Stack test (Opcional)
+        run: stack test
+
+      - name: 🔑 Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ☁️ Azure CLI Action (Ejemplo)
+        run: |
+          echo "Ejecutando comando de Azure CLI después de la autenticación."
+          # Aquí usas azure_identity automáticamente por el login de OIDC.
+          # Si tu código Haskell usa DefaultAzureCredential (que es la recomendada),
+          # capturará automáticamente el token de la sesión de Azure CLI establecida por 'azure/login'.
+          az group show --name ${{ env.AZURE_RESOURCE_GROUP }}
