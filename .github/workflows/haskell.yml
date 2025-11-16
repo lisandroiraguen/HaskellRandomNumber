@@ -19,29 +19,29 @@ jobs:
     # 1. Checkout Code
     - uses: actions/checkout@v4
     
-    # 2. Create Deployment Package 📂
+    # 2. Create Deployment Package 📦
     - name: Prepare Deployment Package
       run: |
         # Create the package directory
         mkdir deploy_package
         
+        # Copy the required files and folders from the repository root
+        
         # Copy the host.json file
         cp host.json deploy_package/
         
-        # Copy the function folder (containing function.json)
-        # Assuming the folder is named 'haskellrandom'
-        cp -r haskellrandom deploy_package/
+        # Copy the function folder (HaskellTrigger)
+        cp -r HaskellTrigger deploy_package/
         
-        # Copy the pre-built Haskell executable and rename it
-        # NOTE: Adjust the path 'path/to/your/haskell-server.exe'
-        # to where the built executable is located in your checked-out repository.
-        # This path must be relative to the root of your repo.
-        cp haskell-server/haskell-server.exe deploy_package/haskell-server.exe
+        # Copy the pre-built Haskell executable. The source and destination name are the same.
+        cp haskell-server.exe deploy_package/
+        
+        # Note: local.settings.json should NOT be deployed to Azure.
         
     # 3. Deploy to Azure Function
     - name: 'Deploy to Azure Function'
       uses: azure/functions-action@v1
       with:
-        app-name: 'haskellrandom' # Replace with your function app name
-        package: 'deploy_package/' # The folder containing the deployable files
+        app-name: 'haskellrandom' # REPLACE with your function app name
+        package: 'deploy_package/' # This directory contains the deployable files
         publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }} # Your GitHub Secret
