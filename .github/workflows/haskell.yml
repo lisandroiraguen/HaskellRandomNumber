@@ -53,8 +53,9 @@ jobs:
           echo "resolver: lts-22.14" > ~/.stack/global-project/stack.yaml          
         
       - name: ⚙️ Stack build in haskell-server
-        # Usamos 'working-directory' para ejecutar el comando dentro de la carpeta correcta
-        run: stack build --fast
+        run: |
+            stack clean
+            stack build --fast
         working-directory: haskell-server # <- CAMBIO CRUCIAL
 
       - name: 🧪 Stack test (Opcional)
