@@ -30,4 +30,4 @@ The API is accessed using a standard `GET` request. No headers or body parameter
 #### Example using `curl`
 
 ```bash
-curl -X GET "[https://haskellrandom-eagsd3b9b5haazdp.westus2-01.azurewebsites.net/api/HaskellTrigger](https://haskellrandom-eagsd3b9b5haazdp.westus2-01.azurewebsites.net/api/HaskellTrigger)"
+curl -X GET https://haskellrandom-eagsd3b9b5haazdp.westus2-01.azurewebsites.net/api/HaskellTrigger
