@@ -9,7 +9,7 @@ The API is intended for developers who require a straightforward source for unpr
 ## Technology Stack
 
 * **Language:** Haskell
-* **Deployment:** Azure (likely an Azure Function or App Service)
+* **Deployment:** Azure - Azure Function
 
 ---
 
